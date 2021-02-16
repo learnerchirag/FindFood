@@ -249,7 +249,7 @@ export default class App extends Component {
                   {this.state.restArray.map(
                     (res) =>
                       this.isSearched(res, this.state.search.trim()) && (
-                        <Row className="my-3">
+                        <Row className="my-3 w-100 m-0">
                           <Col sm={"auto"}>
                             <img
                               height="60px"

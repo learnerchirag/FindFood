@@ -7,18 +7,26 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { Button, Input } from "reactstrap";
 import React, { Component } from "react";
+import {
+  DatePicker,
+  TimePicker,
+  DateTimePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
+import DateFnsUtils from "@date-io/date-fns"; // choose your lib
+
 // import { Button } from "bootstrap";
 import axios from "axios";
 import moment from "moment";
-import TimePicker from "react-time-picker";
 import "./App.css";
-var date = new Date();
+// var date = new Date();
 export default class App extends Component {
   state = {
     searchValue: "",
     week: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     restArray: [],
-    date: date,
+    filteredRestArray: [],
+    date: new Date(),
     dataUpdate: false,
     today: null,
     currentTime: null,
@@ -28,6 +36,7 @@ export default class App extends Component {
     searching: false,
     showCalendar: false,
     showTimePicker: false,
+    isDateChanged: false,
   };
   componentDidMount() {
     axios
@@ -48,11 +57,11 @@ export default class App extends Component {
         });
         this.setState({
           restArray,
-          date,
-          today: date.getDay(),
-          selectedDay: date.getDay(),
-          currentTime: date.getTime(),
-          selectedTime: date.getTime(),
+          filteredRestArray: restArray,
+          today: this.state.date.getDay(),
+          selectedDay: this.state.date.getDay(),
+          currentTime: this.state.date.getTime(),
+          selectedTime: this.state.date.getTime(),
           dataUpdate: true,
         });
         // console.log(dataArray);
@@ -121,7 +130,13 @@ export default class App extends Component {
   };
   validRest = (object) => {
     const begin = moment(object.start[this.state.selectedDay], "h:mma");
+    begin.set('month',this.state.date.getMonth());
+    begin.set('date', this.state.date.getDate());
+    begin.set('year', this.state.date.getFullYear());
     const end = moment(object.end[this.state.selectedDay], "h:mma");
+    end.set('month',this.state.date.getMonth());
+    end.set('date', this.state.date.getDate());
+    end.set('year', this.state.date.getFullYear());
     const time = moment(this.state.selectedTime);
     console.log(time.isBetween(begin, end), begin, end, time);
     return time.isBetween(begin, end);
@@ -139,17 +154,26 @@ export default class App extends Component {
     this.setState({ [event.target.name]: event.target.value, searching: true });
   };
   handleDate = (value) => {
-    date = new Date(value);
-    this.setState(
-      {
-        date,
-        selectedDay: date.getDay(),
-        showCalendar: false,
-      },
-      () => {
-        console.log(this.state.selectedDay);
-      }
-    );
+    const date = new Date(value);
+    const restArray = this.state.restArray;
+    let newRestArray = [];
+    this.setState({
+      selectedDay:date.getDay(), 
+      selectedTime: date.getTime(),
+      date
+    },()=>{
+      restArray.forEach((item, index) => {
+        console.log('iterating in rest array')
+        if((item.start[date.getDay()] &&
+                    this.validRest(item))){
+                      newRestArray.push(item);
+                    }
+      });
+      this.setState({      filteredRestArray: newRestArray,
+      })
+    });
+    
+    console.log(value)
   };
   handleTime = (value) => {
     // this.setState;
@@ -167,7 +191,7 @@ export default class App extends Component {
   handleSort = () => {
     const arr = this.state.restArray;
     arr.sort(this.comparator);
-    this.setState({ restArray: arr });
+    this.setState({ filteredRestArray: arr });
   };
   // handleOneRest=(res)=>{
   //   this.setState({selectedRest:res})
@@ -194,52 +218,13 @@ export default class App extends Component {
             <h1 style={{ fontWeight: "bolder", color: "white" }}>FindFood</h1>
           </div>
           <Row className="w-75">
-            <Col md={2}>
-              <Button
-                style={{
-                  color: "black",
-                  backgroundColor: "white",
-                  fontSize: "1.4rem",
-                  width: "100%",
-                }}
-                onClick={() => {
-                  this.setState({ showTimePicker: !this.state.showTimePicker });
-                }}
-              >
-                {moment(this.state.date.getTime()).format("hh:mma")}
-              </Button>
-              {this.state.showTimePicker && (
-                <TimePicker
-                  className="time-class"
-                  disableClock="true"
-                  onChange={this.handleTime}
-                />
-              )}
-            </Col>
-            <Col md={2}>
-              <Button
-                style={{
-                  color: "black",
-                  backgroundColor: "white",
-                  fontSize: "1.4rem",
-                  width: "100%",
-                }}
-                onClick={() => {
-                  this.setState({ showCalendar: !this.state.showCalendar });
-                }}
-              >
-                {this.state.date.getDate() +
-                  "/" +
-                  this.state.date.getMonth() +
-                  "/" +
-                  this.state.date.getFullYear()}
-              </Button>
-              {this.state.showCalendar && (
-                <Calendar
-                  className="calendar-class"
-                  onChange={this.handleDate}
-                />
-              )}
+            <Col md={4}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DateTimePicker value={this.state.date} className="time-class px-2 py-2 rounded" onChange={this.handleDate}/>
+          </MuiPickersUtilsProvider> 
+           {/*}   <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <DatePicker value={this.state.date} className="time-class px-2 py-2 rounded" onChange={this.handleDate} />
+    </MuiPickersUtilsProvider> */}
             </Col>
             <Col>
               <Input
@@ -297,9 +282,8 @@ export default class App extends Component {
               </Col>
             </Row>
             <Row className="mx-auto" style={{ width: "80%" }}>
-              {this.state.restArray.map(
+              {this.state.filteredRestArray.map(
                 (res) =>
-                  res.start[this.state.selectedDay] &&
                   this.validRest(res) && (
                     <Col md={3}>
                       <Card

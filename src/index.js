@@ -5,10 +5,17 @@ import reportWebVitals from "./reportWebVitals";
 import $ from "jquery";
 import Popper from "popper.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  DatePicker,
+  TimePicker,
+  DateTimePicker,
+  MuiPickersUtilsProvider,
+} from '@material-ui/pickers';
 ReactDOM.render(
   <React.StrictMode>
     <App />
+
   </React.StrictMode>,
   document.getElementById("root")
 );

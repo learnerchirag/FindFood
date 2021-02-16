@@ -197,7 +197,7 @@ export default class App extends Component {
   //   this.setState({selectedRest:res})
   // }
   render() {
-    return (
+    return (  
       <div className="App">
         <div
           className="mb-5"
@@ -215,10 +215,10 @@ export default class App extends Component {
           }}
         >
           <div className="my-3">
-            <h1 style={{ fontWeight: "bolder", color: "white" }}>FindFood</h1>
+            <h1 style={{ fontWeight: "bolder", color: "white",letterSpacing:"0.4rem" }}>FindFood</h1>
           </div>
           <Row className="w-75">
-            <Col md={4}>
+            <Col md={'auto'}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DateTimePicker value={this.state.date} className="time-class px-2 py-2 rounded" onChange={this.handleDate}/>
           </MuiPickersUtilsProvider> 
@@ -226,7 +226,7 @@ export default class App extends Component {
       <DatePicker value={this.state.date} className="time-class px-2 py-2 rounded" onChange={this.handleDate} />
     </MuiPickersUtilsProvider> */}
             </Col>
-            <Col>
+            <Col md={8}>
               <Input
                 className="py-4"
                 placeholder="Search for a restaurant"
@@ -236,7 +236,7 @@ export default class App extends Component {
               />
               {this.state.searching && (
                 <div
-                  className="py-2 mt-1 shadow"
+                  className="p-2 mt-1 shadow w-100"
                   style={{
                     backgroundColor: "white",
                     borderRadius: "10px",
@@ -275,13 +275,13 @@ export default class App extends Component {
           </Row>
         </div>
         {this.state.dataUpdate && (
-          <div className="text-center">
-            <Row>
-              <Col>
-                <Button onClick={this.handleSort}>Sort by Closest time</Button>
+          <div className="text-center container">
+            <Row className="w-100 m-0">
+              <Col style={{textAlign:"end"}}>
+                <Button onClick={this.handleSort} style={{backgroundColor:"#3c170d", color:"white"}}>Sort by Closest time</Button>
               </Col>
             </Row>
-            <Row className="mx-auto" style={{ width: "80%" }}>
+            <Row className="mx-auto w-100 m-0" style={{ width: "80%" }}>
               {this.state.filteredRestArray.map(
                 (res) =>
                   this.validRest(res) && (

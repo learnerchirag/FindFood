@@ -47,7 +47,6 @@ export default class App extends Component {
         dataArray.forEach((ele, index) => {
           const timeString = ele["Mon-Sun 11:30 am - 9 pm"];
           const timeobject = this.handleTimeString(timeString, index);
-          console.log(timeobject);
           const newEle = {
             restaurant: ele["Kushi Tsuru"],
             start: timeobject.startArray,
@@ -64,9 +63,7 @@ export default class App extends Component {
           selectedTime: this.state.date.getTime(),
           dataUpdate: true,
         });
-        // console.log(dataArray);
       });
-    // console.log(restaurants);
   }
   handleTimeString = (string, index) => {
     const startArray = [];
@@ -122,7 +119,6 @@ export default class App extends Component {
         }
       }
     }
-    // console.log(startArray, endArray, string);
     return {
       startArray: startArray,
       endArray: endArray,
@@ -138,7 +134,6 @@ export default class App extends Component {
     end.set('date', this.state.date.getDate());
     end.set('year', this.state.date.getFullYear());
     const time = moment(this.state.selectedTime);
-    console.log(time.isBetween(begin, end), begin, end, time);
     return time.isBetween(begin, end);
   };
   isSearched = (res, string) => {
@@ -163,21 +158,16 @@ export default class App extends Component {
       date
     },()=>{
       restArray.forEach((item, index) => {
-        console.log('iterating in rest array')
         if((item.start[date.getDay()] &&
-                    this.validRest(item))){
-                      newRestArray.push(item);
-                    }
+          this.validRest(item))){
+            newRestArray.push(item);
+          }
       });
-      this.setState({      filteredRestArray: newRestArray,
+      this.setState({ 
+        filteredRestArray: newRestArray,
       })
     });
     
-    console.log(value)
-  };
-  handleTime = (value) => {
-    // this.setState;
-    console.log(value);
   };
   comparator = (a, b) => {
     const closeA = moment(a.end[this.state.selectedDay], "hh:mma");
